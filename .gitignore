@@ -1,0 +1,4 @@
+# Ignore list
+*.o 
+*.out
+app
