@@ -16,7 +16,7 @@ build: $(PROJECT)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(PROJECT): $(OBJ_FILES)
-	$(CC) $(CFLAGS) -o $@ $^ -lncurses
+	$(CC) $(CFLAGS) -o $@ $^ -lncurses -lpthread
 
 clean:
 	rm -rf $(PROJECT) $(OBJ_FILES)

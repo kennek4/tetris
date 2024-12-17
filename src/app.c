@@ -1,8 +1,14 @@
+#include <pthread.h> // Used for multithreading
+#include <unistd.h> // Used for the sleep() function
 #include <ncurses.h>
 #include <signal.h>
 #include <stdlib.h>
 
+static void* game_loop(void* vargp);
 static void finish(int sig);
+static bool isFinished = FALSE;
+
+pthread_t game_thread;
 
 int main() {
 
@@ -15,21 +21,44 @@ int main() {
   nonl(); // Return key does not translate as a newline
   cbreak(); // Takes characters without waiting for \n
 
-  addstr("Press any key");
+  // Create game loop thread
+  pthread_create(&game_thread, NULL, game_loop, NULL);
 
-  char textbuffer[15];
-  char c = getch();
+  char input;
+  char key[4];
 
-  clear();
+  for (;;) {
+    if (!isFinished) {
+      addstr("\nPress Any Key ");
+      refresh();
 
-  sprintf(textbuffer, "You pressed %c\n", c);
-  addstr(textbuffer);
-  refresh();
-
-  getch();
+      input = getch();
+      sprintf(key, " %c\n", input);
+      
+      addstr(key);
+      refresh();
+    }
+  }
 
   finish(EXIT_SUCCESS);
-  return 0;
+  return EXIT_SUCCESS;
+}
+
+static void* game_loop(void* vargp) {
+  char time[50];
+  for (int i = 1; i <= 60; i++) {
+    if (isFinished) {
+      break; 
+    }
+
+    sprintf(time, "\nS:[%d]\n", i);
+
+    sleep(1);
+    addstr(time);
+    refresh();
+  }
+
+  return NULL;
 }
 
 /*
@@ -37,6 +66,10 @@ int main() {
 *  handle the "clean up" of the program.
 */
 static void finish(int sig) {
+
+  pthread_cancel(game_thread);
+  isFinished = TRUE;
+
   endwin();
   exit(EXIT_SUCCESS);
 }
