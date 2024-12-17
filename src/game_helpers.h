@@ -13,5 +13,10 @@ typedef struct {
   int y_pos;
 } Block;
 
+typedef struct {
+  Block* curr;
+  Block* held;
+} PlayerHand;
+
 #endif // !H_GAME_HELPERS
 

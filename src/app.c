@@ -4,7 +4,9 @@
 #include <signal.h>
 #include <stdlib.h>
 
-static void* game_loop(void* vargp);
+#include "gui.h"
+
+static void *game_loop(void* vargp);
 static void finish(int sig);
 static bool isFinished = FALSE;
 
@@ -16,6 +18,7 @@ int main() {
 
   // Basic curses setup
   initscr();
+  curs_set(0);
   keypad(stdscr, TRUE); // Enables the keyboard
   noecho(); // Does not print characters as they are entered
   nonl(); // Return key does not translate as a newline
@@ -24,40 +27,25 @@ int main() {
   // Create game loop thread
   pthread_create(&game_thread, NULL, game_loop, NULL);
 
-  char input;
-  char key[4];
+  int board_width = 23;
+  int board_height = 32;
 
-  for (;;) {
-    if (!isFinished) {
-      addstr("\nPress Any Key ");
-      refresh();
+  WINDOW *game_win = newwin(board_height, board_width, 0, 10);
+  refresh();
 
-      input = getch();
-      sprintf(key, " %c\n", input);
-      
-      addstr(key);
-      refresh();
-    }
-  }
+  create_board(game_win, &board_height, &board_width); 
+  refresh();
+  getch();
 
   finish(EXIT_SUCCESS);
   return EXIT_SUCCESS;
 }
 
-static void* game_loop(void* vargp) {
-  char time[50];
-  for (int i = 1; i <= 60; i++) {
-    if (isFinished) {
-      break; 
-    }
-
-    sprintf(time, "\nS:[%d]\n", i);
-
-    sleep(1);
-    addstr(time);
-    refresh();
+static void* game_loop(void *vargp) {
+  for (int i = 1; i <= 5; i++) {
+    // Make blocks fall 
+    // Cast where the block will land
   }
-
   return NULL;
 }
 
@@ -66,10 +54,9 @@ static void* game_loop(void* vargp) {
 *  handle the "clean up" of the program.
 */
 static void finish(int sig) {
-
   pthread_cancel(game_thread);
   isFinished = TRUE;
-
+  
   endwin();
   exit(EXIT_SUCCESS);
 }
