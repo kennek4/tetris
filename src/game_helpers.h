@@ -8,7 +8,6 @@ typedef struct {
 
 // Represents a Tetris block
 typedef struct {
-  int[4][4] shape_matrix;
   int x_pos;
   int y_pos;
 } Block;

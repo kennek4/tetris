@@ -5,6 +5,8 @@
 #include <stdlib.h>
 
 #include "gui.h"
+#include "game_state.h"
+#include "game_helpers.h"
 
 static void *game_loop(void* vargp);
 static void finish(int sig);
@@ -15,6 +17,17 @@ pthread_t game_thread;
 int main() {
 
   signal(SIGINT, finish); // Handle interrupt
+
+  // Game setup
+  PlayerHand player_hand; 
+  GameBoard game_board; 
+
+  initialize_board(&game_board, 20, 10); 
+
+
+  //TODO: Seperate the the game board with the visuals
+  //      The game coordinates are in a 2D array and we draw the 2D array
+  //      everytime we update the window
 
   // Basic curses setup
   initscr();
@@ -33,7 +46,7 @@ int main() {
   WINDOW *game_win = newwin(board_height, board_width, 0, 10);
   refresh();
 
-  create_board(game_win, &board_height, &board_width); 
+  w_create_board(game_win, &board_height, &board_width); 
   refresh();
   getch();
 
